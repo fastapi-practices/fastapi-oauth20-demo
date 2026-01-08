@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FastAPI OAuth20 Demo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+        .header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            color: white;
+            padding: 32px 48px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .header .subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+        }
+        .header .project-link {
+            margin-top: 16px;
+        }
+        .header .project-link a {
+            color: #a78bfa;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            border-bottom: 1px dashed #a78bfa;
+            padding-bottom: 2px;
+            transition: all 0.2s;
+        }
+        .header .project-link a:hover {
+            color: #c4b5fd;
+            border-bottom-color: #c4b5fd;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 48px;
+        }
+        .user-info {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .user-info h2 {
+            font-size: 24px;
+            color: #1a1a2e;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        .user-info p {
+            color: #4b5563;
+            font-size: 14px;
+            margin: 8px 0;
+        }
+        .user-info pre {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 13px;
+            margin-top: 16px;
+            border: 1px solid #e5e7eb;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            line-height: 1.6;
+        }
+        .content-section {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .provider-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 24px;
+        }
+        .provider-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 18px;
+            border: none;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s;
+            text-decoration: none;
+            color: white;
+            position: relative;
+        }
+        .provider-btn:hover:not(.disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+        .provider-btn:active:not(.disabled) {
+            transform: translateY(-1px);
+        }
+        .provider-btn i {
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+        .provider-btn.disabled {
+            background: #d1d5db !important;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        .provider-btn.disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+        .provider-btn .not-configured {
+            font-size: 11px;
+            opacity: 0.9;
+            font-weight: 400;
+            margin-left: auto;
+        }
+        .github { background: #24292e; }
+        .github:hover:not(.disabled) { background: #1a1e22; }
+
+        .google { background: #4285f4; }
+        .google:hover:not(.disabled) { background: #3367d6; }
+
+        .feishu { background: #00d6b9; }
+        .feishu:hover:not(.disabled) { background: #00b89c; }
+
+        .gitee { background: #c71d23; }
+        .gitee:hover:not(.disabled) { background: #a3181d; }
+
+        .linuxdo { background: #3b3b3b; }
+        .linuxdo:hover:not(.disabled) { background: #252525; }
+
+        .oschina { background: #003366; }
+        .oschina:hover:not(.disabled) { background: #002244; }
+
+        .logout-btn {
+            width: 100%;
+            max-width: 300px;
+            padding: 16px 24px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        .logout-btn:hover {
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+        .error {
+            background: #fef2f2;
+            color: #dc2626;
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            text-align: center;
+            font-size: 14px;
+            border: 1px solid #fecaca;
+        }
+        .section-title {
+            font-size: 14px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        .footer-hint {
+            text-align: center;
+            margin-top: 32px;
+            color: #9ca3af;
+            font-size: 13px;
+        }
+        .footer-hint code {
+            background: #f3f4f6;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-family: 'SF Mono', Monaco, monospace;
+        }
+        @media (max-width: 768px) {
+            .header {
+                padding: 24px 24px;
+            }
+            .container {
+                padding: 24px;
+            }
+            .provider-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>FastAPI OAuth 2.0 Demo</h1>
+        <p class="subtitle">A FastAPI application demonstrating OAuth2.0 integration with multiple authentication providers</p>
+        <div class="project-link">
+            <a href="https://github.com/fastapi-practices/fastapi-oauth20" target="_blank">
+                View on GitHub
+            </a>
+        </div>
+    </div>
+
+    <div class="container">
+        {% if request.query_params.get('error') %}
+        <div class="error">
+            {% if request.query_params.error == 'provider_not_supported' %}
+                Provider not supported or not configured.
+            {% elif request.query_params.error == 'invalid_state' %}
+                Invalid OAuth state. Please try again.
+            {% elif request.query_params.error == 'oauth_failed' %}
+                OAuth authentication failed for {{ request.query_params.get('provider', 'unknown') }}.
+                {% if request.query_params.get('details') %}
+                <br><small>{{ request.query_params.details }}</small>
+                {% endif %}
+            {% else %}
+                An error occurred. Please try again.
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% if user %}
+        <div class="user-info">
+            <h2>Welcome!</h2>
+            <p><strong>Provider:</strong> {{ user.provider | title }}</p>
+            <p><strong>User Data:</strong></p>
+            <pre>{{ user.data | tojson(indent=2) }}</pre>
+        </div>
+        <a href="/logout" class="logout-btn">Logout</a>
+        {% else %}
+        <div class="content-section">
+            <div class="section-title">Choose Provider</div>
+            <div class="provider-grid">
+                <!-- GitHub -->
+                {% if 'github' in providers %}
+                <a href="/api/v1/oauth2/github/authorize" class="provider-btn github">
+                    <i class="fab fa-github"></i>
+                    <span>GitHub</span>
+                </a>
+                {% else %}
+                <div class="provider-btn github disabled">
+                    <i class="fab fa-github"></i>
+                    <span>GitHub</span>
+                    <span class="not-configured">Off</span>
+                </div>
+                {% endif %}
+
+                <!-- Google -->
+                {% if 'google' in providers %}
+                <a href="/api/v1/oauth2/google/authorize" class="provider-btn google">
+                    <i class="fab fa-google"></i>
+                    <span>Google</span>
+                </a>
+                {% else %}
+                <div class="provider-btn google disabled">
+                    <i class="fab fa-google"></i>
+                    <span>Google</span>
+                    <span class="not-configured">Off</span>
+                </div>
+                {% endif %}
+
+                <!-- FeiShu -->
+                {% if 'feishu' in providers %}
+                <a href="/api/v1/oauth2/feishu/authorize" class="provider-btn feishu">
+                    <i class="fas fa-comments"></i>
+                    <span>FeiShu</span>
+                </a>
+                {% else %}
+                <div class="provider-btn feishu disabled">
+                    <i class="fas fa-comments"></i>
+                    <span>FeiShu</span>
+                    <span class="not-configured">Off</span>
+                </div>
+                {% endif %}
+
+                <!-- Gitee -->
+                {% if 'gitee' in providers %}
+                <a href="/api/v1/oauth2/gitee/authorize" class="provider-btn gitee">
+                    <i class="fas fa-code-branch"></i>
+                    <span>Gitee</span>
+                </a>
+                {% else %}
+                <div class="provider-btn gitee disabled">
+                    <i class="fas fa-code-branch"></i>
+                    <span>Gitee</span>
+                    <span class="not-configured">Off</span>
+                </div>
+                {% endif %}
+
+                <!-- Linux.do -->
+                {% if 'linuxdo' in providers %}
+                <a href="/api/v1/oauth2/linux-do/authorize" class="provider-btn linuxdo">
+                    <i class="fab fa-linux"></i>
+                    <span>Linux.do</span>
+                </a>
+                {% else %}
+                <div class="provider-btn linuxdo disabled">
+                    <i class="fab fa-linux"></i>
+                    <span>Linux.do</span>
+                    <span class="not-configured">Off</span>
+                </div>
+                {% endif %}
+
+                <!-- OSChina -->
+                {% if 'oschina' in providers %}
+                <a href="/api/v1/oauth2/oschina/authorize" class="provider-btn oschina">
+                    <i class="fas fa-code"></i>
+                    <span>OSChina</span>
+                </a>
+                {% else %}
+                <div class="provider-btn oschina disabled">
+                    <i class="fas fa-code"></i>
+                    <span>OSChina</span>
+                    <span class="not-configured">Off</span>
+                </div>
+                {% endif %}
+            </div>
+
+            <p class="footer-hint">Configure providers in <code>.env</code> file</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
