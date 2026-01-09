@@ -12,12 +12,11 @@ router = APIRouter()
 
 # Initialize LinuxDo OAuth client
 linuxdo_client = None
-redirect_uri = f"{settings.app_url}/api/v1/oauth2/linux-do/callback"
 
-if settings.linuxdo_client_id and settings.linuxdo_client_secret:
+if settings.LINUXDO_CLIENT_ID and settings.LINUXDO_CLIENT_SECRET:
     linuxdo_client = LinuxDoOAuth20(
-        client_id=settings.linuxdo_client_id,
-        client_secret=settings.linuxdo_client_secret,
+        client_id=settings.LINUXDO_CLIENT_ID,
+        client_secret=settings.LINUXDO_CLIENT_SECRET,
     )
 
 
@@ -27,7 +26,7 @@ async def linuxdo_auth():
     if not linuxdo_client:
         return RedirectResponse(url="/?error=provider_not_supported")
 
-    auth_url = await linuxdo_client.get_authorization_url(redirect_uri=redirect_uri)
+    auth_url = await linuxdo_client.get_authorization_url(redirect_uri=settings.LINUXDO_REDIRECT_URI)
     return RedirectResponse(url=auth_url)
 
 
@@ -36,7 +35,7 @@ async def linuxdo_callback(
     request: Request,
     oauth2: Annotated[
         FastAPIOAuth20,
-        Depends(FastAPIOAuth20(linuxdo_client, redirect_uri=redirect_uri)),
+        Depends(FastAPIOAuth20(linuxdo_client, redirect_uri=settings.LINUXDO_REDIRECT_URI)),
     ],
 ):
     """Handle LinuxDo OAuth callback."""

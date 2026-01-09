@@ -9,43 +9,52 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
+        case_sensitive=True,
     )
 
     # Application
-    app_name: str = "FastAPI OAuth20 Demo"
-    app_url: str = "http://127.0.0.1:8000"
+    APP_NAME: str = "FastAPI OAuth20 Demo"
+    APP_URL: str = "http://127.0.0.1:8000"
 
     # GitHub OAuth
-    github_client_id: str
-    github_client_secret: str
+    GITHUB_CLIENT_ID: str
+    GITHUB_CLIENT_SECRET: str
+    GITHUB_REDIRECT_URI: str = "http://127.0.0.1:8000/api/v1/oauth2/github/callback"
 
     # Google OAuth
-    google_client_id: str
-    google_client_secret: str
+    GOOGLE_CLIENT_ID: str
+    GOOGLE_CLIENT_SECRET: str
+    GOOGLE_REDIRECT_URI: str = "http://127.0.0.1:8000/api/v1/oauth2/google/callback"
 
     # FeiShu OAuth
-    feishu_client_id: str
-    feishu_client_secret: str
+    FEISHU_CLIENT_ID: str
+    FEISHU_CLIENT_SECRET: str
+    FEISHU_REDIRECT_URI: str = "http://127.0.0.1:8000/api/v1/oauth2/feishu/callback"
 
     # Gitee OAuth
-    gitee_client_id: str
-    gitee_client_secret: str
+    GITEE_CLIENT_ID: str
+    GITEE_CLIENT_SECRET: str
+    GITEE_REDIRECT_URI: str = "http://127.0.0.1:8000/api/v1/oauth2/gitee/callback"
 
     # Linux.do OAuth
-    linuxdo_client_id: str
-    linuxdo_client_secret: str
+    LINUXDO_CLIENT_ID: str
+    LINUXDO_CLIENT_SECRET: str
+    LINUXDO_REDIRECT_URI: str = "http://127.0.0.1:8000/api/v1/oauth2/linux-do/callback"
 
     # OSChina OAuth
-    oschina_client_id: str
-    oschina_client_secret: str
+    OSCHINA_CLIENT_ID: str
+    OSCHINA_CLIENT_SECRET: str
+    OSCHINA_REDIRECT_URI: str = "http://127.0.0.1:8000/api/v1/oauth2/oschina/callback"
 
     # WeChat Mini Program OAuth
-    wechat_mp_client_id: str
-    wechat_mp_client_secret: str
+    WECHAT_MP_CLIENT_ID: str
+    WECHAT_MP_CLIENT_SECRET: str
+    WECHAT_MP_REDIRECT_URI: str = "http://127.0.0.1:8000/api/v1/oauth2/wechat_mp/callback"
 
     # WeChat Open Platform OAuth
-    wechat_open_client_id: str
-    wechat_open_client_secret: str
+    WECHAT_OPEN_CLIENT_ID: str
+    WECHAT_OPEN_CLIENT_SECRET: str
+    WECHAT_OPEN_REDIRECT_URI: str = "http://127.0.0.1:8000/api/v1/oauth2/wechat_open/callback"
 
 
 @lru_cache

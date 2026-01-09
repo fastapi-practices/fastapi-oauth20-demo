@@ -12,12 +12,11 @@ router = APIRouter()
 
 # Initialize Gitee OAuth client
 gitee_client = None
-redirect_uri = f"{settings.app_url}/api/v1/oauth2/gitee/callback"
 
-if settings.gitee_client_id and settings.gitee_client_secret:
+if settings.GITEE_CLIENT_ID and settings.GITEE_CLIENT_SECRET:
     gitee_client = GiteeOAuth20(
-        client_id=settings.gitee_client_id,
-        client_secret=settings.gitee_client_secret,
+        client_id=settings.GITEE_CLIENT_ID,
+        client_secret=settings.GITEE_CLIENT_SECRET,
     )
 
 
@@ -27,7 +26,7 @@ async def gitee_auth():
     if not gitee_client:
         return RedirectResponse(url="/?error=provider_not_supported")
 
-    auth_url = await gitee_client.get_authorization_url(redirect_uri=redirect_uri)
+    auth_url = await gitee_client.get_authorization_url(redirect_uri=settings.GITEE_REDIRECT_URI)
     return RedirectResponse(url=auth_url)
 
 
@@ -36,7 +35,7 @@ async def gitee_callback(
     request: Request,
     oauth2: Annotated[
         FastAPIOAuth20,
-        Depends(FastAPIOAuth20(gitee_client, redirect_uri=redirect_uri)),
+        Depends(FastAPIOAuth20(gitee_client, redirect_uri=settings.GITEE_REDIRECT_URI)),
     ],
 ):
     """Handle Gitee OAuth callback."""

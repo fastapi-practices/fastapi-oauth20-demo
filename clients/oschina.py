@@ -12,12 +12,11 @@ router = APIRouter()
 
 # Initialize OSChina OAuth client
 oschina_client = None
-redirect_uri = f"{settings.app_url}/api/v1/oauth2/oschina/callback"
 
-if settings.oschina_client_id and settings.oschina_client_secret:
+if settings.OSCHINA_CLIENT_ID and settings.OSCHINA_CLIENT_SECRET:
     oschina_client = OSChinaOAuth20(
-        client_id=settings.oschina_client_id,
-        client_secret=settings.oschina_client_secret,
+        client_id=settings.OSCHINA_CLIENT_ID,
+        client_secret=settings.OSCHINA_CLIENT_SECRET,
     )
 
 
@@ -27,7 +26,7 @@ async def oschina_auth():
     if not oschina_client:
         return RedirectResponse(url="/?error=provider_not_supported")
 
-    auth_url = await oschina_client.get_authorization_url(redirect_uri=redirect_uri)
+    auth_url = await oschina_client.get_authorization_url(redirect_uri=settings.OSCHINA_REDIRECT_URI)
     return RedirectResponse(url=auth_url)
 
 
@@ -36,7 +35,7 @@ async def oschina_callback(
     request: Request,
     oauth2: Annotated[
         FastAPIOAuth20,
-        Depends(FastAPIOAuth20(oschina_client, redirect_uri=redirect_uri)),
+        Depends(FastAPIOAuth20(oschina_client, redirect_uri=settings.OSCHINA_REDIRECT_URI)),
     ],
 ):
     """Handle OSChina OAuth callback."""

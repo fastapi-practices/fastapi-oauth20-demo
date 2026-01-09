@@ -12,12 +12,11 @@ router = APIRouter()
 
 # Initialize Google OAuth client
 google_client = None
-redirect_uri = f"{settings.app_url}/api/v1/oauth2/google/callback"
 
-if settings.google_client_id and settings.google_client_secret:
+if settings.GOOGLE_CLIENT_ID and settings.GOOGLE_CLIENT_SECRET:
     google_client = GoogleOAuth20(
-        client_id=settings.google_client_id,
-        client_secret=settings.google_client_secret,
+        client_id=settings.GOOGLE_CLIENT_ID,
+        client_secret=settings.GOOGLE_CLIENT_SECRET,
     )
 
 
@@ -27,7 +26,7 @@ async def google_auth():
     if not google_client:
         return RedirectResponse(url="/?error=provider_not_supported")
 
-    auth_url = await google_client.get_authorization_url(redirect_uri=redirect_uri)
+    auth_url = await google_client.get_authorization_url(redirect_uri=settings.GOOGLE_REDIRECT_URI)
     return RedirectResponse(url=auth_url)
 
 
@@ -36,7 +35,7 @@ async def google_callback(
     request: Request,
     oauth2: Annotated[
         FastAPIOAuth20,
-        Depends(FastAPIOAuth20(google_client, redirect_uri=redirect_uri)),
+        Depends(FastAPIOAuth20(google_client, redirect_uri=settings.GOOGLE_REDIRECT_URI)),
     ],
 ):
     """Handle Google OAuth callback."""

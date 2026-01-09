@@ -59,14 +59,14 @@ templates = Jinja2Templates(directory="templates")
 def get_enabled_providers() -> dict[str, bool]:
     """Get dictionary of enabled OAuth providers."""
     return {
-        "github": bool(settings.github_client_id and settings.github_client_secret),
-        "google": bool(settings.google_client_id and settings.google_client_secret),
-        "feishu": bool(settings.feishu_client_id and settings.feishu_client_secret),
-        "gitee": bool(settings.gitee_client_id and settings.gitee_client_secret),
-        "linuxdo": bool(settings.linuxdo_client_id and settings.linuxdo_client_secret),
-        "oschina": bool(settings.oschina_client_id and settings.oschina_client_secret),
-        "wechat_mp": bool(settings.wechat_mp_client_id and settings.wechat_mp_client_secret),
-        "wechat_open": bool(settings.wechat_open_client_id and settings.wechat_open_client_secret),
+        "github": bool(settings.GITHUB_CLIENT_ID and settings.GITHUB_CLIENT_SECRET),
+        "google": bool(settings.GOOGLE_CLIENT_ID and settings.GOOGLE_CLIENT_SECRET),
+        "feishu": bool(settings.FEISHU_CLIENT_ID and settings.FEISHU_CLIENT_SECRET),
+        "gitee": bool(settings.GITEE_CLIENT_ID and settings.GITEE_CLIENT_SECRET),
+        "linuxdo": bool(settings.LINUXDO_CLIENT_ID and settings.LINUXDO_CLIENT_SECRET),
+        "oschina": bool(settings.OSCHINA_CLIENT_ID and settings.OSCHINA_CLIENT_SECRET),
+        "wechat_mp": bool(settings.WECHAT_MP_CLIENT_ID and settings.WECHAT_MP_CLIENT_SECRET),
+        "wechat_open": bool(settings.WECHAT_OPEN_CLIENT_ID and settings.WECHAT_OPEN_CLIENT_SECRET),
     }
 
 

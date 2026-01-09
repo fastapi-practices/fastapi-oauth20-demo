@@ -12,12 +12,11 @@ router = APIRouter()
 
 # Initialize WeChat Open Platform OAuth client
 wechat_open_client = None
-redirect_uri = f"{settings.app_url}/api/v1/oauth2/wechat_open/callback"
 
-if settings.wechat_open_client_id and settings.wechat_open_client_secret:
+if settings.WECHAT_OPEN_CLIENT_ID and settings.WECHAT_OPEN_CLIENT_SECRET:
     wechat_open_client = WeChatOpenOAuth20(
-        client_id=settings.wechat_open_client_id,
-        client_secret=settings.wechat_open_client_secret,
+        client_id=settings.WECHAT_OPEN_CLIENT_ID,
+        client_secret=settings.WECHAT_OPEN_CLIENT_SECRET,
     )
 
 
@@ -27,7 +26,7 @@ async def wechat_open_auth():
     if not wechat_open_client:
         return RedirectResponse(url="/?error=provider_not_supported")
 
-    auth_url = await wechat_open_client.get_authorization_url(redirect_uri=redirect_uri)
+    auth_url = await wechat_open_client.get_authorization_url(redirect_uri=settings.WECHAT_OPEN_REDIRECT_URI)
     return RedirectResponse(url=auth_url)
 
 
@@ -36,7 +35,7 @@ async def wechat_open_callback(
     request: Request,
     oauth2: Annotated[
         FastAPIOAuth20,
-        Depends(FastAPIOAuth20(wechat_open_client, redirect_uri=redirect_uri)),
+        Depends(FastAPIOAuth20(wechat_open_client, redirect_uri=settings.WECHAT_OPEN_REDIRECT_URI)),
     ],
 ):
     """Handle WeChat Open Platform OAuth callback."""

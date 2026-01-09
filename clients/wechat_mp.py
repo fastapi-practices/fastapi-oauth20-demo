@@ -12,12 +12,11 @@ router = APIRouter()
 
 # Initialize WeChat Mini Program OAuth client
 wechat_mp_client = None
-redirect_uri = f"{settings.app_url}/api/v1/oauth2/wechat_mp/callback"
 
-if settings.wechat_mp_client_id and settings.wechat_mp_client_secret:
+if settings.WECHAT_MP_CLIENT_ID and settings.WECHAT_MP_CLIENT_SECRET:
     wechat_mp_client = WeChatMpOAuth20(
-        client_id=settings.wechat_mp_client_id,
-        client_secret=settings.wechat_mp_client_secret,
+        client_id=settings.WECHAT_MP_CLIENT_ID,
+        client_secret=settings.WECHAT_MP_CLIENT_SECRET,
     )
 
 
@@ -27,7 +26,7 @@ async def wechat_mp_auth():
     if not wechat_mp_client:
         return RedirectResponse(url="/?error=provider_not_supported")
 
-    auth_url = await wechat_mp_client.get_authorization_url(redirect_uri=redirect_uri)
+    auth_url = await wechat_mp_client.get_authorization_url(redirect_uri=settings.WECHAT_MP_REDIRECT_URI)
     return RedirectResponse(url=auth_url)
 
 
@@ -36,7 +35,7 @@ async def wechat_mp_callback(
     request: Request,
     oauth2: Annotated[
         FastAPIOAuth20,
-        Depends(FastAPIOAuth20(wechat_mp_client, redirect_uri=redirect_uri)),
+        Depends(FastAPIOAuth20(wechat_mp_client, redirect_uri=settings.WECHAT_MP_REDIRECT_URI)),
     ],
 ):
     """Handle WeChat Mini Program OAuth callback."""

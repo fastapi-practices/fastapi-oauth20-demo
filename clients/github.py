@@ -12,12 +12,11 @@ router = APIRouter()
 
 # Initialize GitHub OAuth client
 github_client = None
-redirect_uri = f"{settings.app_url}/api/v1/oauth2/github/callback"
 
-if settings.github_client_id and settings.github_client_secret:
+if settings.GITHUB_CLIENT_ID and settings.GITHUB_CLIENT_SECRET:
     github_client = GitHubOAuth20(
-        client_id=settings.github_client_id,
-        client_secret=settings.github_client_secret,
+        client_id=settings.GITHUB_CLIENT_ID,
+        client_secret=settings.GITHUB_CLIENT_SECRET,
     )
 
 
@@ -27,7 +26,7 @@ async def github_auth():
     if not github_client:
         return RedirectResponse(url="/?error=provider_not_supported")
 
-    auth_url = await github_client.get_authorization_url(redirect_uri=redirect_uri)
+    auth_url = await github_client.get_authorization_url(redirect_uri=settings.GITHUB_REDIRECT_URI)
     return RedirectResponse(url=auth_url)
 
 
@@ -36,7 +35,7 @@ async def github_callback(
     request: Request,
     oauth2: Annotated[
         FastAPIOAuth20,
-        Depends(FastAPIOAuth20(github_client, redirect_uri=redirect_uri)),
+        Depends(FastAPIOAuth20(github_client, redirect_uri=settings.GITHUB_REDIRECT_URI)),
     ],
 ):
     """Handle GitHub OAuth callback."""
