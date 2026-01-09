@@ -5,6 +5,8 @@ from .feishu import router as feishu_router
 from .gitee import router as gitee_router
 from .linuxdo import router as linuxdo_router
 from .oschina import router as oschina_router
+from .wechat_mp import router as wechat_mp_router
+from .wechat_open import router as wechat_open_router
 
 __all__ = [
     "github_router",
@@ -13,4 +15,6 @@ __all__ = [
     "gitee_router",
     "linuxdo_router",
     "oschina_router",
+    "wechat_mp_router",
+    "wechat_open_router",
 ]

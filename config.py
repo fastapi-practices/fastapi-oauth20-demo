@@ -39,6 +39,14 @@ class Settings(BaseSettings):
     oschina_client_id: str
     oschina_client_secret: str
 
+    # WeChat Mini Program OAuth
+    wechat_mp_client_id: str
+    wechat_mp_client_secret: str
+
+    # WeChat Open Platform OAuth
+    wechat_open_client_id: str
+    wechat_open_client_secret: str
+
 
 @lru_cache
 def get_settings() -> Settings:

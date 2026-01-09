@@ -14,6 +14,8 @@ from clients import (
     gitee_router,
     linuxdo_router,
     oschina_router,
+    wechat_mp_router,
+    wechat_open_router,
 )
 from config import settings
 
@@ -46,6 +48,8 @@ app.include_router(feishu_router, tags=["FeiShu OAuth"])
 app.include_router(gitee_router, tags=["Gitee OAuth"])
 app.include_router(linuxdo_router, tags=["LinuxDo OAuth"])
 app.include_router(oschina_router, tags=["OSChina OAuth"])
+app.include_router(wechat_mp_router, tags=["WeChat MP OAuth"])
+app.include_router(wechat_open_router, tags=["WeChat Open OAuth"])
 
 # Mount static files and templates
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -61,6 +65,8 @@ def get_enabled_providers() -> dict[str, bool]:
         "gitee": bool(settings.gitee_client_id and settings.gitee_client_secret),
         "linuxdo": bool(settings.linuxdo_client_id and settings.linuxdo_client_secret),
         "oschina": bool(settings.oschina_client_id and settings.oschina_client_secret),
+        "wechat_mp": bool(settings.wechat_mp_client_id and settings.wechat_mp_client_secret),
+        "wechat_open": bool(settings.wechat_open_client_id and settings.wechat_open_client_secret),
     }
 
 

@@ -153,6 +153,12 @@
         .oschina { background: #003366; }
         .oschina:hover:not(.disabled) { background: #002244; }
 
+        .wechat_mp { background: #07c160; }
+        .wechat_mp:hover:not(.disabled) { background: #06ad56; }
+
+        .wechat_open { background: #09bb07; }
+        .wechat_open:hover:not(.disabled) { background: #08a006; }
+
         .logout-btn {
             width: 100%;
             max-width: 300px;
@@ -204,6 +210,156 @@
             border-radius: 6px;
             font-family: 'SF Mono', Monaco, monospace;
         }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            animation: fadeIn 0.2s ease-out;
+        }
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease-out;
+            position: relative;
+        }
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .modal-header i {
+            font-size: 32px;
+            color: #07c160;
+        }
+        .modal-header h3 {
+            font-size: 22px;
+            color: #1a1a2e;
+            font-weight: 600;
+        }
+        .modal-body {
+            color: #4b5563;
+            line-height: 1.6;
+        }
+        .modal-body p {
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+        .modal-body strong {
+            color: #1a1a2e;
+        }
+        .link-box {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 16px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .link-box input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 13px;
+            color: #374151;
+            font-family: 'SF Mono', Monaco, monospace;
+            outline: none;
+        }
+        .copy-btn {
+            background: #07c160;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .copy-btn:hover {
+            background: #06ad56;
+        }
+        .copy-btn.copied {
+            background: #10b981;
+        }
+        .download-links {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+        .download-links h4 {
+            font-size: 14px;
+            color: #1a1a2e;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+        .download-links a {
+            display: inline-block;
+            color: #3b82f6;
+            text-decoration: none;
+            font-size: 13px;
+            margin-right: 16px;
+            margin-bottom: 8px;
+            border-bottom: 1px solid transparent;
+            transition: all 0.2s;
+        }
+        .download-links a:hover {
+            color: #2563eb;
+            border-bottom-color: #2563eb;
+        }
+        .modal-footer {
+            margin-top: 24px;
+            display: flex;
+            justify-content: flex-end;
+        }
+        .modal-close-btn {
+            background: #374151;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .modal-close-btn:hover {
+            background: #1f2937;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         @media (max-width: 768px) {
             .header {
                 padding: 24px 24px;
@@ -213,6 +369,10 @@
             }
             .provider-grid {
                 grid-template-columns: 1fr;
+            }
+            .modal-content {
+                padding: 24px;
+                width: 95%;
             }
         }
     </style>
@@ -341,11 +501,155 @@
                     <span class="not-configured">Off</span>
                 </div>
                 {% endif %}
+
+                <!-- WeChat Mini Program -->
+                {% if 'wechat_mp' in providers %}
+                <button onclick="showWeChatMPModal()" class="provider-btn wechat_mp" style="width: 100%;">
+                    <i class="fab fa-weixin"></i>
+                    <span>WeChat MP</span>
+                </button>
+                {% else %}
+                <div class="provider-btn wechat_mp disabled">
+                    <i class="fab fa-weixin"></i>
+                    <span>WeChat MP</span>
+                    <span class="not-configured">Off</span>
+                </div>
+                {% endif %}
+
+                <!-- WeChat Open Platform -->
+                {% if 'wechat_open' in providers %}
+                <a href="/api/v1/oauth2/wechat_open/authorize" class="provider-btn wechat_open">
+                    <i class="fab fa-weixin"></i>
+                    <span>WeChat Open</span>
+                </a>
+                {% else %}
+                <div class="provider-btn wechat_open disabled">
+                    <i class="fab fa-weixin"></i>
+                    <span>WeChat Open</span>
+                    <span class="not-configured">Off</span>
+                </div>
+                {% endif %}
             </div>
 
             <p class="footer-hint">Configure providers in <code>.env</code> file</p>
         </div>
         {% endif %}
     </div>
+
+    <!-- WeChat MP Modal -->
+    <div id="wechatMPModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <i class="fab fa-weixin"></i>
+                <h3>WeChat MP 授权说明</h3>
+            </div>
+            <div class="modal-body">
+                <p><strong>微信公众号网页授权要求：</strong></p>
+                <ul style="margin: 12px 0 16px 20px; font-size: 14px; line-height: 1.8;">
+                    <li>必须在微信客户端内打开</li>
+                    <li>必须使用 HTTPS 协议</li>
+                </ul>
+
+                <div style="margin: 20px 0; padding: 12px; background: #fef2f2; border-radius: 8px; border: 1px solid #fecaca;">
+                    <p style="font-size: 13px; color: #991b1b; margin: 0;">
+                        <i class="fas fa-exclamation-circle" style="color: #dc2626;"></i>
+                        <strong>本地测试限制：</strong>当前是 HTTP 环境，无法直接在微信中测试
+                    </p>
+                </div>
+
+                <div class="download-links" style="margin-top: 20px; padding-top: 0; border-top: none;">
+                    <h4 style="margin-bottom: 12px;">
+                        <i class="fas fa-tools" style="color: #07c160;"></i>
+                        使用微信开发者工具进行测试
+                    </h4>
+                    <p style="font-size: 13px; margin-bottom: 12px; color: #4b5563; line-height: 1.6;">
+                        微信开发者工具可以模拟微信环境，支持 HTTP 协议，适合本地开发调试。
+                    </p>
+                    <a href="https://mp.weixin.qq.com/debug/cgi-bin/sandboxinfo?action=showinfo&t=sandbox/index" target="_blank">
+                        <i class="fas fa-flask"></i> 微信公众平台测试号管理
+                    </a>
+                    <br>
+                    <a href="https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html" target="_blank">
+                        <i class="fas fa-download"></i> 下载微信开发者工具
+                    </a>
+
+                    <div style="margin-top: 16px;">
+                        <p style="font-size: 13px; color: #4b5563; margin-bottom: 8px;">
+                            <strong>授权链接：</strong>复制到微信开发者工具 → 公众号网页调试
+                        </p>
+                        <div class="link-box">
+                            <input type="text" id="authLink" readonly value="">
+                            <button class="copy-btn" onclick="copyAuthLink()">复制</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-close-btn" onclick="closeWeChatMPModal()">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get the authorization URL
+        const authUrl = window.location.origin + '/api/v1/oauth2/wechat_mp/authorize';
+
+        function showWeChatMPModal() {
+            const modal = document.getElementById('wechatMPModal');
+            const linkInput = document.getElementById('authLink');
+            linkInput.value = authUrl;
+            modal.classList.add('show');
+        }
+
+        function closeWeChatMPModal() {
+            const modal = document.getElementById('wechatMPModal');
+            modal.classList.remove('show');
+        }
+
+        function copyAuthLink() {
+            const linkInput = document.getElementById('authLink');
+            linkInput.select();
+            linkInput.setSelectionRange(0, 99999); // For mobile devices
+
+            navigator.clipboard.writeText(linkInput.value).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '已复制';
+                btn.classList.add('copied');
+
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                // Fallback for older browsers
+                document.execCommand('copy');
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '已复制';
+                btn.classList.add('copied');
+
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('wechatMPModal');
+            if (event.target === modal) {
+                closeWeChatMPModal();
+            }
+        }
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeWeChatMPModal();
+            }
+        });
+    </script>
 </body>
 </html>
